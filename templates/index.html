@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Приложение</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 0;
+            color: #333;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            letter-spacing: -0.5px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .username {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: transparent;
+            color: #666;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid #e8e8e8;
+        }
+
+        .btn-logout:hover {
+            background: #f5f5f5;
+            color: #333;
+            border-color: #ddd;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #fafafa;
+            border-right: 1px solid #e8e8e8;
+            padding: 24px 0;
+            position: sticky;
+            top: 73px;
+            height: calc(100vh - 73px);
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            padding: 12px 32px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sidebar-item.active {
+            background: white;
+            color: #667eea;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+
+        .sidebar-item-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .input-container {
+            margin-bottom: 32px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group input[type="date"] {
+            width: 100%;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            padding: 12px 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            font-size: 15px;
+            background: white;
+            font-family: inherit;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row > * {
+            flex: 1;
+        }
+
+        .btn-add {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            height: fit-content;
+        }
+
+        .btn-add:hover {
+            background: #5568d3;
+        }
+
+        .btn-add:active {
+            transform: scale(0.98);
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+            position: relative;
+        }
+
+        .todo-item:hover {
+            background: #fafafa;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .todo-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .todo-text {
+            font-size: 15px;
+            color: #333;
+            word-break: break-word;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .todo-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .todo-date {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .todo-due-date {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+            padding: 2px 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+        }
+
+        .todo-due-date.overdue {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .todo-category {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+            padding: 2px 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+        }
+
+        .todo-category.today {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .todo-category.anytime {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .todo-category.year {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .todo-item:hover .todo-actions {
+            opacity: 1;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-toggle {
+            background: transparent;
+            color: #667eea;
+            border-color: #e8e8e8;
+        }
+
+        .btn-toggle:hover {
+            background: #f0f0f0;
+            border-color: #ddd;
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: #ff4757;
+            border-color: #e8e8e8;
+        }
+
+        .btn-delete:hover {
+            background: #fff5f5;
+            border-color: #ffcdd2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            opacity: 0.3;
+            color: #667eea;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .todo-count {
+            font-size: 14px;
+            font-weight: 400;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e8e8e8;
+                padding: 0;
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .sidebar-item {
+                padding: 12px 20px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .sidebar-item.active {
+                border-left: none;
+                border-bottom-color: #667eea;
+            }
+
+            .app-container {
+                min-height: 100vh;
+            }
+
+            .header {
+                padding: 16px 20px;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .btn-add {
+                width: 100%;
+            }
+
+            .todo-actions {
+                opacity: 1;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 12px;
+            }
+
+            .todo-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-action {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">✓ To-Do</div>
+            </div>
+            <div class="user-section">
+                <span class="username">{{ username }}</span>
+                <a href="/logout" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <a href="/" class="sidebar-item {% if current_filter == 'all' %}active{% endif %}">
+                    <span class="sidebar-item-icon">📋</span>
+                    <span>Все задачи</span>
+                </a>
+                <a href="/?filter=today" class="sidebar-item {% if current_filter == 'today' %}active{% endif %}">
+                    <span class="sidebar-item-icon">📅</span>
+                    <span>Сегодня</span>
+                </a>
+                <a href="/?filter=anytime" class="sidebar-item {% if current_filter == 'anytime' %}active{% endif %}">
+                    <span class="sidebar-item-icon">⏰</span>
+                    <span>В любое время</span>
+                </a>
+                <a href="/?filter=year" class="sidebar-item {% if current_filter == 'year' %}active{% endif %}">
+                    <span class="sidebar-item-icon">📆</span>
+                    <span>В течение года</span>
+                </a>
+            </div>
+
+            <div class="content">
+                <div class="input-container">
+                    <form action="/add" method="POST" class="input-wrapper">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                name="text" 
+                                placeholder="Добавить новую задачу..." 
+                                required
+                                autocomplete="off"
+                            >
+                            <div class="form-row">
+                                <input 
+                                    type="date" 
+                                    name="due_date" 
+                                    placeholder="Срок выполнения (необязательно)"
+                                >
+                                <select name="category" id="category-select">
+                                    <option value="">Автоматически (по дате)</option>
+                                    <option value="today">Сегодня</option>
+                                    <option value="anytime">В любое время</option>
+                                    <option value="year">В течение года</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-add">Добавить</button>
+                    </form>
+                </div>
+
+                {% if todos %}
+                <div class="section-title">
+                    {% if current_filter == 'today' %}
+                        Задачи на сегодня
+                    {% elif current_filter == 'anytime' %}
+                        Задачи без срока
+                    {% elif current_filter == 'year' %}
+                        Задачи в течение года
+                    {% else %}
+                        Все задачи
+                    {% endif %}
+                    <span class="todo-count">({{ todos|length }})</span>
+                </div>
+                <ul class="todo-list">
+                    {% for todo in todos %}
+                    <li class="todo-item {% if todo.completed %}completed{% endif %}">
+                        <input 
+                            type="checkbox" 
+                            class="todo-checkbox" 
+                            {% if todo.completed %}checked{% endif %}
+                            onchange="window.location.href='/toggle/{{ todo.id }}'"
+                        >
+                        <div class="todo-content">
+                            <div class="todo-text">{{ todo.text }}</div>
+                            <div class="todo-meta">
+                                <div class="todo-date">Создано: {{ todo.created_at }}</div>
+                                {% if todo.category %}
+                                    {% set category_names = {'today': 'Сегодня', 'anytime': 'В любое время', 'year': 'В течение года'} %}
+                                    <div class="todo-category {{ todo.category }}">
+                                        {{ category_names.get(todo.category, todo.category) }}
+                                    </div>
+                                {% endif %}
+                                {% if todo.due_date %}
+                                    {% set due_date = todo.due_date.split(' ')[0] if ' ' in todo.due_date else todo.due_date %}
+                                    {% set is_overdue = due_date < today_str if today_str else False %}
+                                    <div class="todo-due-date {% if is_overdue and not todo.completed %}overdue{% endif %}">
+                                        📅 {{ due_date }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="todo-actions">
+                            <a href="/toggle/{{ todo.id }}" class="btn-action btn-toggle">
+                                {% if todo.completed %}Отменить{% else %}Выполнить{% endif %}
+                            </a>
+                            <a href="/delete/{{ todo.id }}" class="btn-action btn-delete">Удалить</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <p>
+                        {% if current_filter == 'today' %}
+                            Нет задач на сегодня
+                        {% elif current_filter == 'anytime' %}
+                            Нет задач без срока
+                        {% elif current_filter == 'year' %}
+                            Нет задач в течение года
+                        {% else %}
+                            У вас пока нет задач. Добавьте первую!
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Автоматический выбор категории при выборе даты
+        const dateInput = document.querySelector('input[name="due_date"]');
+        const categorySelect = document.getElementById('category-select');
+        
+        if (dateInput && categorySelect) {
+            dateInput.addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (!selectedDate) {
+                    return;
+                }
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const selected = new Date(selectedDate);
+                selected.setHours(0, 0, 0, 0);
+                const yearFromNow = new Date(today);
+                yearFromNow.setFullYear(today.getFullYear() + 1);
+                
+                // Если категория не выбрана вручную, автоматически определяем
+                if (categorySelect.value === '') {
+                    if (selected.getTime() === today.getTime()) {
+                        categorySelect.value = 'today';
+                    } else if (selected >= today && selected <= yearFromNow) {
+                        categorySelect.value = 'year';
+                    } else {
+                        categorySelect.value = 'anytime';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
